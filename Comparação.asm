@@ -146,6 +146,7 @@ MAIN PROC
                          GUARDACONTADOR
                          CALL           IMPRIMEINTERFACE
                          CALL           INTERFACE
+                         CALL           ERROOUACERTO
                          SOLTACONTADOR
                          DEC            CX
                          CMP            CX,0
@@ -299,7 +300,7 @@ VERIFICAÇÃO:
                          MOV            AX,ARMAZENACORDENADA[SI]
                          CMP            AX,18H
                          JG             ERRORCOR
-                         CALL           COMPAROMATRIZ
+                         CALL           VERREPT
                          JMP            SAIR
     ERRORCOR:            
                          IMPMENSAG      CORDENADANAOACEITA
@@ -340,12 +341,47 @@ SAIRESC PROC
                          INT            21H
                          RET
 SAIRESC ENDP
-COMPAROMATRIZ PROC
-                         IMPMENSAG      ACERTODETIRO
-                         IMPMENSAG      ERRODETIRO
+VERREPT PROC
+                         LEA            DI, ARMAZENACORDENADA
+                         MOV            SI,[DI]
+                         ADD            DI,2
+                         MOV            BX,[DI]
+    REGISTRATIRO:        MOV            AX, MATRIZIMPRESSÃO[SI+BX]
+                         CMP            AX, 058H
+                         JE             REPITIDO
+    REPITIDO:            
                          IMPMENSAG      RETCORDENADA
                          MOV            AH,01
                          INT            21H
+                         CMP            AL, 0DH
+                         JE             SAIRDOCOM
+    SAIRDOCOM:           
                          RET
-COMPAROMATRIZ ENDP
+VERREPT ENDP
+ERROOUACERTO PROC
+                         SALVAMJOGO
+                         LEA            DI, ARMAZENACORDENADA
+                         MOV            AX, [DI]
+                         MOV            BX,40
+                         MUL            BX
+                         ADD            DI,2
+                         MOV            DX, [DI]
+
+                         VOLTAVALOR
+
+                         CMP            BX,20
+                         JE             ALINHACOLUNA
+                         CMP            DI,400
+                         JE             ALINHALINHA
+
+    ALINHACOLUNA:        
+                         ADD            DX, 20
+
+    ALINHALINHA:         
+                         ADD            AX,400
+    MOV BX,DX
+    MOV SI,AX
+    COMPARA:
+                         RET
+ERROOUACERTO ENDP
 END MAIN
