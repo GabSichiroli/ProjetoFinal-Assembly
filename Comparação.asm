@@ -336,4 +336,8 @@ SAIRESC PROC
                          INT               21H
                          RET
 SAIRESC ENDP
+COMPAROMATRIZ PROC
+    MS
+    RET
+COMPAROMATRIZ ENDP
 END MAIN
